@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!-- ============================================================
+  MANDAR'S CUT: my first website
+  One file, three parts:
+    1. HTML  (the content)        -> inside <body>
+    2. CSS   (the looks)          -> inside <style>
+    3. JS    (the behaviour)      -> inside <script> at the bottom
+  To add a movie: copy one whole <article class="film"> block,
+  paste it below the last one, and change the text.
+============================================================= -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mandar’s Cut: Four films that stay with you</title>
+
+  <!-- Fonts from Google (needs internet). If they fail, the fallbacks in CSS take over. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---------- 1. Colours and fonts live here as "variables" ----------
+       Change a value once and it updates everywhere on the page. */
+    :root {
+      --bg: #1a1d22;          /* wet asphalt */
+      --bg-raised: #23272e;   /* slightly lighter panel */
+      --text: #e8e3d8;        /* old paper */
+      --muted: #a39f95;       /* faded ink */
+      --neon: #ff2e88;        /* default neon pink */
+      --font-display: "Anton", Impact, "Arial Narrow Bold", sans-serif;
+      --font-body: "Newsreader", Georgia, "Times New Roman", serif;
+    }
+
+    /* ---------- 2. Base styles ---------- */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      line-height: 1.65;
+    }
+
+    /* Film grain: a fixed layer of SVG noise on top of everything.
+       pointer-events: none lets clicks pass straight through it. */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.09;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--neon); outline-offset: 3px; }
+
+    /* ---------- 3. Hero: the neon sign ---------- */
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 6vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(3.5rem, 13vw, 10rem);
+      line-height: 0.95;
+      margin: 0 0 1.5rem;
+      color: var(--neon);
+      /* stacked shadows = a glow */
+      text-shadow: 0 0 6px var(--neon), 0 0 24px var(--neon), 0 0 60px rgba(255, 46, 136, 0.55);
+      animation: flicker 2.4s ease-out 1;   /* plays once when the page loads */
+    }
+    .hero p { max-width: 36rem; color: var(--muted); font-size: 1.3rem; margin: 0 0 2rem; }
+
+    /* The one moment of motion on the page: the sign buzzing on */
+    @keyframes flicker {
+      0%, 18%, 22%, 62%, 64% { opacity: 0.25; text-shadow: none; }
+      20%, 24%, 63%, 100%    { opacity: 1; }
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 0.04em;
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--neon);
+      padding: 0.8rem 1.6rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn:hover { background: var(--neon); color: var(--bg); }
+
+    /* ---------- 4. One film = one band ----------
+       Each film sets its own --accent colour (see the HTML below). */
+    .film {
+      --accent: var(--neon);
+      border-top: 1px solid #343941;
+      padding: 5rem 6vw;
+    }
+    .film-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+    }
+    .film h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1;
+      margin: 0 0 0.6rem;
+      color: var(--accent);
+      text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
+    }
+    .facts { color: var(--muted); font-style: italic; margin: 0 0 1.8rem; }
+    .teaser {
+      font-size: 1.3rem;
+      max-width: 34rem;
+      margin: 0;
+      padding-left: 1.2rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    /* The "watch next" panel */
+    .next { background: var(--bg-raised); padding: 2rem; align-self: start; }
+    .next h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.6rem;
+      margin: 0 0 1rem;
+    }
+    .next ul { list-style: none; margin: 0; padding: 0; }
+    .next li { padding: 0.9rem 0; border-top: 1px solid #343941; }
+    .next li:first-child { border-top: 0; padding-top: 0; }
+    .next strong { color: var(--accent); font-weight: 600; }
+    .next span { display: block; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+
+    /* Brief highlight when the random button picks a film */
+    .film.picked { background: var(--bg-raised); }
+
+    footer { padding: 3rem 6vw; color: var(--muted); text-align: left; max-width: 1200px; margin: 0 auto; }
+
+    /* ---------- 5. Phones: stack the two columns ---------- */
+    @media (max-width: 800px) {
+      .film-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .film { padding: 3.5rem 6vw; }
+    }
+
+    /* Respect people who turn animations off in their system settings */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero h1 { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <h1>Mandar’s<br>Cut</h1>
+    <p>Four films I can’t shake. Each one comes with a teaser (no spoilers) and three more films to watch next.</p>
+    <div>
+      <button class="btn" id="random-btn" type="button">Pick one for me</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== FILM 1: change --accent to restyle this film ===== -->
+    <article class="film" id="fight-club" style="--accent: #ff3d7f;">
+      <div class="film-inner">
+        <div>
+          <h2>Fight Club</h2>
+          <p class="facts">1999 · Directed by David Fincher</p>
+          <p class="teaser">An insomniac office worker, numb from a life of flat-pack furniture and fluorescent lights, meets a charming stranger who offers a very different way to feel alive. What starts as a secret meeting in a basement slowly grows into something neither of them can control.</p>
+        </div>
+        <aside class="next">
+          <h3>Watch next</h3>
+          <ul>
+            <li><strong>American Psycho</strong> (2000)<span>Another sharp, dark look at a man hiding behind a polished surface.</span></li>
+            <li><strong>Taxi Driver</strong> (1976)<span>A lonely night-shift driver and a city that wears him down.</span></li>
+            <li><strong>Trainspotting</strong> (1996)<span>Rebellious, funny and reckless, with the same anger at “normal” life.</span></li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ===== FILM 2 ===== -->
+    <article class="film" id="into-the-wild" style="--accent: #ff9f1c;">
+      <div class="film-inner">
+        <div>
+          <h2>Into the Wild</h2>
+          <p class="facts">2007 · Directed by Sean Penn</p>
+          <p class="teaser">A bright young graduate gives away his savings, drops his old name and hitchhikes north, chasing a life with no rules and no one to answer to. Every person he meets along the way leaves a mark, and the road keeps pulling him toward Alaska.</p>
+        </div>
+        <aside class="next">
+          <h3>Watch next</h3>
+          <ul>
+            <li><strong>Wild</strong> (2014)<span>A woman walks a thousand miles of trail to put her life back together.</span></li>
+            <li><strong>127 Hours</strong> (2010)<span>A solo hiker, a remote canyon and a test of will.</span></li>
+            <li><strong>The Way</strong> (2010)<span>A father walks a pilgrimage in his son’s place and finds more than he expected.</span></li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ===== FILM 3 ===== -->
+    <article class="film" id="kill-bill" style="--accent: #ffd400;">
+      <div class="film-inner">
+        <div>
+          <h2>Kill Bill</h2>
+          <p class="facts">2003 · Directed by Quentin Tarantino</p>
+          <p class="teaser">Left for dead on her wedding day, a former assassin wakes up years later with a short list of names and one goal. Her path to the end of that list runs through swordfights, old teachers and the people she once called family.</p>
+        </div>
+        <aside class="next">
+          <h3>Watch next</h3>
+          <ul>
+            <li><strong>Oldboy</strong> (2003)<span>A man held captive for years has days to find out why.</span></li>
+            <li><strong>Lady Snowblood</strong> (1973)<span>The classic revenge story that inspired Tarantino’s style.</span></li>
+            <li><strong>John Wick</strong> (2014)<span>Stylish, fast and built entirely around one personal loss.</span></li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ===== FILM 4 ===== -->
+    <article class="film" id="se7en" style="--accent: #4fd6a0;">
+      <div class="film-inner">
+        <div>
+          <h2>Se7en</h2>
+          <p class="facts">1995 · Directed by David Fincher</p>
+          <p class="teaser">A weary detective one week from retirement is paired with an eager newcomer, and together they chase a killer whose crimes follow a disturbing pattern. The rain never stops, and the deeper they dig, the less they like what they find.</p>
+        </div>
+        <aside class="next">
+          <h3>Watch next</h3>
+          <ul>
+            <li><strong>Zodiac</strong> (2007)<span>A real-life hunt for a killer that slowly takes over everyone’s life.</span></li>
+            <li><strong>Memories of Murder</strong> (2003)<span>Korean detectives, a rural town and a case that won’t close.</span></li>
+            <li><strong>Prisoners</strong> (2013)<span>A father takes matters into his own hands when the police run out of leads.</span></li>
+          </ul>
+        </aside>
+      </div>
+    </article>
+
+  </main>
+
+  <footer>
+    <p>Made by Mandar. My first website.</p>
+  </footer>
+
+  <script>
+    /* ---------- The "Pick one for me" button ----------
+       Step by step:
+       1. Grab every film on the page.
+       2. Choose a random one.
+       3. Scroll to it and highlight it for a moment. */
+    const button = document.getElementById("random-btn");
+
+    button.addEventListener("click", function () {
+      const films = document.querySelectorAll(".film");
+      const choice = films[Math.floor(Math.random() * films.length)];
+
+      // Remove the highlight from any film that still has it
+      films.forEach(function (film) { film.classList.remove("picked"); });
+
+      choice.scrollIntoView({ behavior: "smooth", block: "start" });
+      choice.classList.add("picked");
+
+      // Take the highlight away after 2.5 seconds
+      setTimeout(function () { choice.classList.remove("picked"); }, 2500);
+    });
+  </script>
+
+</body>
+</html>
